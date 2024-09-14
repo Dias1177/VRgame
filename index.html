@@ -53,6 +53,14 @@
       </a-box>
       <a-text value="1971: Микропроцессор Intel 4004" color="black" position="0 2.5 -9"></a-text>
 
+      <!-- Подключаем модель -->
+      <a-assets>
+        <a-asset-item id="computerModel" src="ImageToStl.com_remotecontroller.gltf"></a-asset-item>
+      </a-assets>
+
+      <!-- Добавляем модель на сцену -->
+      <a-entity gltf-model="#computerModel" scale="10 10 10" position="2 2 -3"></a-entity>
+
       <!-- Пол -->
       <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="20" color="#7BC8A4"></a-plane>
 
