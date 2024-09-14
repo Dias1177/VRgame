@@ -1,78 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>A-Frame Game: Сбор бонусов с гироскопом</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История компьютеров в A-Frame</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script>
-      AFRAME.registerComponent('touch-movement', {
+      // Функция для обработки клика
+      AFRAME.registerComponent('click-listener', {
         init: function () {
-          let el = this.el;
-          this.direction = new THREE.Vector3();
-          this.speed = 0.1;
-
-          let touchStartX, touchStartY;
-
-          window.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
+          var el = this.el;
+          el.addEventListener('click', function () {
+            var message = el.getAttribute('data-message');
+            alert(message);
           });
-
-          window.addEventListener('touchmove', (e) => {
-            let touchX = e.touches[0].clientX;
-            let touchY = e.touches[0].clientY;
-
-            let deltaX = touchX - touchStartX;
-            let deltaY = touchY - touchStartY;
-
-            // Двигаем игрока в зависимости от направления свайпа
-            this.direction.set(deltaX * 0.01, 0, deltaY * 0.01);
-            touchStartX = touchX;
-            touchStartY = touchY;
-          });
-        },
-        tick: function () {
-          let position = this.el.object3D.position;
-          position.addScaledVector(this.direction, this.speed);
-          this.el.setAttribute('position', position);
-        }
-      });
-
-      AFRAME.registerComponent('collect-bonus', {
-        tick: function () {
-          let player = document.querySelector('#player');
-          let playerPos = player.object3D.position;
-          let bonusPos = this.el.object3D.position;
-
-          if (playerPos.distanceTo(bonusPos) < 1) {
-            let scoreElement = document.querySelector('#score');
-            let score = parseInt(scoreElement.getAttribute('value'));
-            scoreElement.setAttribute('value', score + 1);
-            this.el.parentNode.removeChild(this.el); // Удаляем бонус
-          }
         }
       });
     </script>
   </head>
   <body>
     <a-scene>
-      <!-- Камера с поддержкой управления гироскопом -->
-      <a-entity camera look-controls position="0 1.6 4"></a-entity>
+      <!-- Камера с управлением и курсором для взаимодействия -->
+      <a-entity camera wasd-controls look-controls position="0 1.6 0">
+        <a-cursor></a-cursor>
+      </a-entity>
 
-      <!-- Игрок: шарик -->
-      <a-sphere id="player" position="0 0.5 0" radius="0.5" color="#4CC3D9" touch-movement></a-sphere>
+      <!-- Эпоха: Механический век -->
+      <a-box position="0 1 -3" width="2" height="1" depth="1" color="#FFC65D" 
+             data-message="Это машина Бэббиджа! Первый концептуальный механический компьютер."
+             click-listener>
+      </a-box>
+      <a-text value="1837: Механическая вычислительная машина Чарльза Бэббиджа" color="black" position="0 2 -3"></a-text>
 
-      <!-- Бонусы: кубики -->
-      <a-box position="2 0.5 -3" depth="0.5" height="0.5" width="0.5" color="red" collect-bonus></a-box>
-      <a-box position="-2 0.5 -3" depth="0.5" height="0.5" width="0.5" color="green" collect-bonus></a-box>
-      <a-box position="1 0.5 -2" depth="0.5" height="0.5" width="0.5" color="yellow" collect-bonus></a-box>
+      <!-- Эпоха: Электромеханический век -->
+      <a-box position="3 1 -5" width="2" height="1" depth="1" color="#7BC8A4"
+             data-message="Перфокарты использовались для управления механическими процессами."
+             click-listener>
+      </a-box>
+      <a-text value="1887: Перфокарты и машины Табуляции Холлерита" color="black" position="3 2 -5"></a-text>
+
+      <!-- Эпоха: Электронный век -->
+      <a-box position="-3 1 -7" width="2" height="1" depth="1" color="#4CC3D9"
+             data-message="ENIAC: Первый программируемый электронный компьютер!"
+             click-listener>
+      </a-box>
+      <a-text value="1945: ENIAC" color="black" position="-3 2 -7"></a-text>
+
+      <!-- Эпоха: Цифровой век -->
+      <a-box position="0 1 -9" width="2" height="1" depth="1" color="#FFC0CB"
+             data-message="Микропроцессор 4004 от Intel – начало новой эры!"
+             click-listener>
+      </a-box>
+      <a-text value="1971: Микропроцессор Intel 4004" color="black" position="0 2 -9"></a-text>
 
       <!-- Пол -->
-      <a-plane position="0 0 -3" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="20" color="#7BC8A4"></a-plane>
 
-      <!-- Счётчик очков -->
-      <a-text id="score" value="0" position="0 2.5 -5" align="center" color="black"></a-text>
-      
       <!-- Небо -->
       <a-sky color="#ECECEC"></a-sky>
     </a-scene>
