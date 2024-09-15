@@ -24,8 +24,8 @@
   </head>
   <body>
     <a-scene>
-      <!-- Камера -->
-      <a-entity id="player" camera wasd-controls look-controls position="0 1.6 0"></a-entity>
+      <!-- Камера игрока -->
+      <a-entity id="player" camera position="0 1.6 0" look-controls></a-entity>
 
       <!-- Пол -->
       <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
@@ -42,20 +42,33 @@
       var player = document.getElementById('player');
       var moveInterval;
 
-      // Функция для начала движения
+      // Функция для начала движения с учётом ориентации камеры
       function startMoving(direction) {
-        stopMoving(); // Остановить предыдущее движение, если есть
+        stopMoving(); // Останавливаем предыдущее движение
+
         moveInterval = setInterval(function() {
+          var cameraDirection = new THREE.Vector3();
+          player.object3D.getWorldDirection(cameraDirection); // Получаем направление камеры
+          
+          // Сохраняем текущую позицию игрока
           var position = player.object3D.position;
+
           if (direction === 'up') {
-            position.z -= 0.05;
+            // Движение вперёд
+            position.add(cameraDirection.multiplyScalar(-0.05));
           } else if (direction === 'down') {
-            position.z += 0.05;
+            // Движение назад (обратное направление камеры)
+            position.add(cameraDirection.multiplyScalar(0.05));
           } else if (direction === 'left') {
-            position.x -= 0.05;
+            // Движение влево (по перпендикуляру к направлению камеры)
+            var leftDirection = new THREE.Vector3(-cameraDirection.z, 0, cameraDirection.x);
+            position.add(leftDirection.multiplyScalar(0.05));
           } else if (direction === 'right') {
-            position.x += 0.05;
+            // Движение вправо (по перпендикуляру к направлению камеры)
+            var rightDirection = new THREE.Vector3(cameraDirection.z, 0, -cameraDirection.x);
+            position.add(rightDirection.multiplyScalar(0.05));
           }
+
           player.object3D.position.set(position.x, position.y, position.z);
         }, 10); // Интервал для плавного движения
       }
@@ -65,7 +78,7 @@
         clearInterval(moveInterval);
       }
 
-      // Навешиваем события для удерживания кнопок
+      // События для кнопок движения
       document.getElementById('up').addEventListener('mousedown', function() {
         startMoving('up');
       });
@@ -90,7 +103,7 @@
       document.getElementById('right').addEventListener('mouseup', stopMoving);
       document.getElementById('right').addEventListener('mouseleave', stopMoving);
 
-      // Добавим поддержку для мобильных устройств (touch events)
+      // Поддержка для мобильных устройств (touch events)
       document.getElementById('up').addEventListener('touchstart', function() {
         startMoving('up');
       });
