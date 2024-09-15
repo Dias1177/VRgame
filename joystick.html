@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.7.3/dist/nipplejs.min.js"></script>
+    <style>
+      #joystick {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        width: 150px;
+        height: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Камера с управлением -->
+      <a-entity camera joystick-controls position="0 1.6 0"></a-entity>
+
+      <!-- Пол -->
+      <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
+
+      <!-- Небо -->
+      <a-sky color="#ECECEC"></a-sky>
+    </a-scene>
+
+    <!-- Виртуальный джойстик -->
+    <div id="joystick"></div>
+
+    <script>
+      var joystick = nipplejs.create({
+        zone: document.getElementById('joystick'),
+        mode: 'static',
+        position: { left: '50px', bottom: '50px' },
+        color: 'blue',
+        size: 150
+      });
+
+      var moveX = 0;
+      var moveZ = 0;
+
+      joystick.on('move', function (evt, data) {
+        var angle = data.angle.degree;
+        var force = data.force;
+
+        moveX = Math.sin(angle * Math.PI / 180) * force * 0.1;
+        moveZ = Math.cos(angle * Math.PI / 180) * force * 0.1;
+      });
+
+      joystick.on('end', function () {
+        moveX = 0;
+        moveZ = 0;
+      });
+
+      AFRAME.registerComponent('joystick-controls', {
+        tick: function () {
+          var el = this.el;
+          var position = el.getAttribute('position');
+          position.x += moveX;
+          position.z += moveZ;
+          el.setAttribute('position', position);
+        }
+      });
+    </script>
+  </body>
+</html>
