@@ -24,13 +24,14 @@
       <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
 
       <!-- Небо -->
-      <a-sky color="#aaaaaa"></a-sky>
+      <a-sky color="#444444"></a-sky>
     </a-scene>
 
     <!-- Виртуальный джойстик -->
     <div id="joystick"></div>
 
     <script>
+      // Инициализация джойстика
       var joystick = nipplejs.create({
         zone: document.getElementById('joystick'),
         mode: 'static',
@@ -42,17 +43,20 @@
       var moveX = 0;
       var moveZ = 0;
 
+      // Добавим обработку движения джойстика с выводом в консоль для отладки
       joystick.on('move', function (evt, data) {
-        var angle = data.angle.degree;
-        var force = data.force;
+        var angle = data.angle.degree; // угол джойстика
+        var force = data.force;        // сила джойстика
 
-        // Перевод угла и силы джойстика в движение по осям
+        console.log('Angle: ' + angle + ', Force: ' + force); // вывод в консоль
+
+        // Переводим угол и силу джойстика в перемещение по осям X и Z
         moveX = Math.sin(angle * Math.PI / 180) * force * 0.05;
         moveZ = Math.cos(angle * Math.PI / 180) * force * 0.05;
       });
 
       joystick.on('end', function () {
-        // Останавливаем движение при отпускании джойстика
+        console.log('Joystick released');
         moveX = 0;
         moveZ = 0;
       });
@@ -62,10 +66,14 @@
         tick: function () {
           var el = this.el;
           var position = el.getAttribute('position');
-
-          // Обновление позиции объекта на каждом кадре
+          
+          // Обновляем позицию
           position.x += moveX;
           position.z += moveZ;
+
+          // Выводим текущую позицию в консоль для отладки
+          console.log('New position: ', position.x, position.z);
+
           el.setAttribute('position', position);
         }
       });
