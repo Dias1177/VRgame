@@ -179,7 +179,7 @@
         var inputValue = userInput.value;
         if (inputValue.trim() !== "") {
           // Обновляем текст в 3D-сцене
-          if (answers.includes(inputValue.toLowerCase())) {
+          if (answers.includes(inputValue.toLowerCase().trim())) {
             unguessedWords -= 1;
             if (unguessedWords === 0) {
               alert(`Поздравляю вы прошли данную игру!
@@ -194,6 +194,8 @@
           // Если текст не введён, выводим сообщение об ошибке
           alert('❌❌❌');
         }
+
+        userInput.value = '';
       });
 
 
